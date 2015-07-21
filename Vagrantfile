@@ -47,7 +47,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # argument is a set of non-required options.
   config.vm.synced_folder "./www-public" , "/var/www/" + project_name + "/",  :nfs => true, :mount_options => ['rw', 'vers=3', 'tcp', 'fsc' ,'actimeo=2']
   config.vm.synced_folder "./dev-tools-public" , "/var/www/dev-tools-public/",  :nfs => true, :mount_options => ['rw', 'vers=3', 'tcp', 'fsc' ,'actimeo=2']
-
+  config.vm.provider "virtualbox" do |v|
+      v.memory = 2048
+  end
   if Vagrant.has_plugin?("vagrant-cachier")
     config.cache.scope = :box
     config.cache.auto_detect = true
@@ -72,7 +74,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # by modifying the host machines hosts file
   config.hostmanager.enabled = true
   config.hostmanager.manage_host = true
-  
+
   config.vm.define project_name do |node|
     node.vm.hostname = project_name + ".local"
     node.vm.network :private_network, ip: ip_address
@@ -82,8 +84,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
 
   config.vm.provision "chef_solo" do |chef|
-    #chef.log_level = :debug  
-    
+    #chef.log_level = :debug
+
     chef.custom_config_path = "Vagrantfile.chef"
 
     chef.add_recipe "apt"
@@ -113,7 +115,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
           "display_errors" => "On",
           "realpath_cache_size" => "4MB"
         }
-      },  
+      },
       :mysql =>{
         :server_root_password   => one_for_all_password,
         :server_repl_password   => one_for_all_password,
